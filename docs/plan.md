@@ -49,10 +49,10 @@ The point of this phase is to know whether Qwen 7B can produce useful feedback *
 
 ## Phase 4 — Prompt library
 
-- [ ] Create `app/prompts/library.json` with the 13 prompts from `product-spec.md` §4
-- [ ] Load the library at app startup
-- [ ] Render the session-start screen with library + custom tabs
-- [ ] Selecting a prompt navigates to the recording screen with the prompt rendered
+- [x] Create `app/prompts/library.json` with the 13 prompts from `product-spec.md` §4
+- [x] Load the library at app startup _(loaded once at module import; id→prompt lookup)_
+- [x] Render the session-start screen with library + custom tabs _(grouped list, all prompts visible, instead of the §3.1 category drill-down — simpler for 13 items)_
+- [x] Selecting a prompt navigates to the recording screen with the prompt rendered _(library: GET /record/{id}; custom: POST /record; recording controls deferred to Phase 5)_
 
 ## Phase 5 — Recording flow
 

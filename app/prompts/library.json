@@ -1,0 +1,37 @@
+{
+  "categories": [
+    {
+      "name": "System design",
+      "prompts": [
+        { "id": "sd1", "text": "Walk me through how you'd design a URL shortener for a service expecting 100M URLs." },
+        { "id": "sd2", "text": "Design a notification system that supports email, push, and SMS at 10K notifications/second." },
+        { "id": "sd3", "text": "How would you architect a feature flag service for a multi-region SaaS product?" },
+        { "id": "sd4", "text": "Design a job queue that guarantees at-least-once delivery with backoff." }
+      ]
+    },
+    {
+      "name": "Technical deep-dive",
+      "prompts": [
+        { "id": "td1", "text": "Explain how database sharding works and the trade-offs you'd consider." },
+        { "id": "td2", "text": "Walk me through what happens, in detail, when a user types a URL and hits enter." },
+        { "id": "td3", "text": "Describe how you'd debug a production service whose p99 latency suddenly doubled." }
+      ]
+    },
+    {
+      "name": "Behavioral / leadership",
+      "prompts": [
+        { "id": "bl1", "text": "Tell me about a time you had to disagree with your manager." },
+        { "id": "bl2", "text": "Describe the most technically complex project you've led." },
+        { "id": "bl3", "text": "How do you handle an underperforming team member?" },
+        { "id": "bl4", "text": "Tell me about a time you made a wrong technical decision and how you recovered." }
+      ]
+    },
+    {
+      "name": "Past project walkthrough",
+      "prompts": [
+        { "id": "pp1", "text": "Walk me through a system you built or significantly contributed to in the last two years." },
+        { "id": "pp2", "text": "Describe a technical decision you championed that turned out to be the right call, and explain why." }
+      ]
+    }
+  ]
+}

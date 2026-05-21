@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Padanan — new session{% endblock %}
+{% block content %}
+<div class="tabs">
+  <button class="tab active" data-panel="library">Library</button>
+  <button class="tab" data-panel="custom">Custom</button>
+</div>
+
+<section id="panel-library" class="panel">
+  {% for category in library.categories %}
+  <div class="category">
+    <h2>{{ category.name }}</h2>
+    <ul class="prompt-list">
+      {% for prompt in category.prompts %}
+      <li><a href="/record/{{ prompt.id }}">{{ prompt.text }}</a></li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endfor %}
+</section>
+
+<section id="panel-custom" class="panel hidden">
+  <form method="post" action="/record" class="custom-form">
+    <label for="prompt_text">Paste a prompt you want to rehearse</label>
+    <textarea id="prompt_text" name="prompt_text" rows="4" required
+      placeholder="e.g. a question from a real upcoming interview"></textarea>
+    <button type="submit">Use this prompt</button>
+  </form>
+</section>
+
+<script>
+  // Minimal tab toggle — vanilla JS, no framework (stack constraint: no build step).
+  document.querySelectorAll(".tab").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
+      document.querySelectorAll(".panel").forEach((p) => p.classList.add("hidden"));
+      tab.classList.add("active");
+      document.getElementById("panel-" + tab.dataset.panel).classList.remove("hidden");
+    });
+  });
+</script>
+{% endblock %}

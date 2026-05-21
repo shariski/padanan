@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Padanan — recording{% endblock %}
+{% block content %}
+<a href="/" class="back">← New session</a>
+
+<section class="prompt-display">
+  <p class="prompt-source muted">{{ prompt_source }} prompt</p>
+  <h2 class="prompt-text">{{ prompt_text }}</h2>
+</section>
+
+<section class="recorder card">
+  <p class="muted">Recording controls (Record/Stop, timer, upload) arrive in Phase 5.</p>
+</section>
+{% endblock %}
