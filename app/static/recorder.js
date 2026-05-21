@@ -74,7 +74,7 @@
     recordBtn.disabled = true;
     recordBtn.textContent = "● Record";
     recordBtn.classList.remove("recording");
-    statusEl.textContent = "Uploading…";
+    statusEl.textContent = "Uploading and transcribing… (this can take 10–30s)";
   }
 
   async function upload() {
@@ -87,10 +87,7 @@
       const res = await fetch("/api/sessions", { method: "POST", body: form });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      // Phase 6 will redirect to the analyzing screen here.
-      statusEl.textContent =
-        `Uploaded as session #${data.session_id} ` +
-        `(${data.duration_seconds.toFixed(1)}s). Transcription + analysis wire in next.`;
+      window.location = data.redirect; // -> /sessions/<id> (transcript view)
     } catch (err) {
       statusEl.textContent = `Upload failed: ${err.message}`;
       recordBtn.disabled = false;

@@ -55,3 +55,20 @@ async def attach_audio(session_id: int, audio_path: str, duration_seconds: float
             (audio_path, duration_seconds, session_id),
         )
         await conn.commit()
+
+
+async def set_transcript(session_id: int, transcript: str) -> None:
+    async with aiosqlite.connect(DB_PATH) as conn:
+        await conn.execute(
+            "UPDATE sessions SET transcript = ? WHERE id = ?",
+            (transcript, session_id),
+        )
+        await conn.commit()
+
+
+async def get_session(session_id: int) -> dict | None:
+    async with aiosqlite.connect(DB_PATH) as conn:
+        conn.row_factory = aiosqlite.Row
+        cur = await conn.execute("SELECT * FROM sessions WHERE id = ?", (session_id,))
+        row = await cur.fetchone()
+        return dict(row) if row else None

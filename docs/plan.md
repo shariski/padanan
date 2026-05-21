@@ -63,10 +63,10 @@ The point of this phase is to know whether Qwen 7B can produce useful feedback *
 
 ## Phase 6 — Transcription wiring
 
-- [ ] `app/transcribe.py` with a `WhisperModel` instance loaded at app startup
-- [ ] Function `transcribe_session(session_id)` that reads the audio file, runs ffmpeg conversion to 16kHz mono WAV, calls `model.transcribe(...)`, stores transcript in the session row
-- [ ] After `POST /api/sessions`, trigger transcription (synchronous in MVP — the request takes ~10 seconds, which is fine for one user)
-- [ ] Return a 302 / HTMX redirect to the analyzing screen
+- [x] `app/transcribe.py` with a `WhisperModel` instance loaded at app startup _(loaded in the lifespan via `load_model()`, not at import)_
+- [x] Function `transcribe_session(session_id)` that reads the audio file, runs ffmpeg conversion to 16kHz mono WAV, calls `model.transcribe(...)`, stores transcript in the session row _(split into pure `transcribe_audio(path)` + `db.set_transcript`, orchestrated in the route — cleaner separation)_
+- [x] After `POST /api/sessions`, trigger transcription (synchronous in MVP — the request takes ~10 seconds, which is fine for one user) _(via `asyncio.to_thread`; ~29s for a 130s clip)_
+- [x] Return a 302 / HTMX redirect to the analyzing screen _(JSON `{redirect}` + JS navigation, since upload is fetch-based; lands on `GET /sessions/{id}`)_
 
 ## Phase 7 — Analysis wiring
 

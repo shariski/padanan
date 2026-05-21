@@ -134,3 +134,16 @@ button:hover { opacity: 0.92; }
 .timer.red { color: var(--accent); }
 
 #status { margin-top: 1rem; margin-bottom: 0; }
+
+/* Session view */
+.result-block { margin-bottom: 1.5rem; }
+
+.result-block h3 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+
+.transcript { white-space: pre-wrap; margin: 0; }

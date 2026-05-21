@@ -13,6 +13,7 @@ and returns the session id. Transcription (Phase 6) and analysis (Phase 7) wire
 in after.
 """
 
+import asyncio
 import json
 import subprocess
 from contextlib import asynccontextmanager
@@ -23,7 +24,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from . import db
+from . import db, transcribe
 
 BASE_DIR = Path(__file__).parent
 
@@ -41,6 +42,7 @@ PROMPTS_BY_ID = {
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     await db.init_db()
+    transcribe.load_model()  # load Whisper once at startup, not per request
     yield
 
 
@@ -83,11 +85,24 @@ async def create_session(
     # Insert first to get the id, then save the file as <id>.<ext> (product-spec §6).
     session_id = await db.create_session(prompt_text, prompt_source)
     audio_path = f"{session_id}.{_audio_ext(audio.content_type)}"
-    (db.RECORDINGS_DIR / audio_path).write_bytes(await audio.read())
-    duration = _probe_duration(db.RECORDINGS_DIR / audio_path)
-    await db.attach_audio(session_id, audio_path, duration)
+    full_path = db.RECORDINGS_DIR / audio_path
+    full_path.write_bytes(await audio.read())
+    await db.attach_audio(session_id, audio_path, _probe_duration(full_path))
 
-    return {"session_id": session_id, "audio_path": audio_path, "duration_seconds": duration}
+    # Transcribe synchronously (MVP, single user). Whisper blocks, so run it off
+    # the event loop. Analysis (Phase 7) happens on the session view next.
+    transcript = await asyncio.to_thread(transcribe.transcribe_audio, full_path)
+    await db.set_transcript(session_id, transcript)
+
+    return {"session_id": session_id, "redirect": f"/sessions/{session_id}"}
+
+
+@app.get("/sessions/{session_id}", response_class=HTMLResponse)
+async def view_session(request: Request, session_id: int) -> HTMLResponse:
+    session = await db.get_session(session_id)
+    if session is None:
+        raise HTTPException(status_code=404, detail="Session not found")
+    return templates.TemplateResponse(request, "session_view.html", {"session": session})
 
 
 def _recording_screen(request: Request, prompt_text: str, prompt_source: str) -> HTMLResponse:
