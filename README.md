@@ -39,7 +39,9 @@ No cloud APIs. No paid services. The Lenovo Legion is out of scope for week one.
 
 ## Status
 
-Pre-build. See [`docs/plan.md`](docs/plan.md) for the build task list and [`docs/risks.md`](docs/risks.md) for known unknowns.
+MVP built and dogfooded on the Mac mini (Phases 0–10). The full loop works: record → transcribe (faster-whisper `large-v3-turbo`) → analyze (Qwen 2.5 7B via Ollama) → side-by-side results, with a session history. The app is reachable over Tailscale (binds `0.0.0.0`), but iPhone **recording** needs Tailscale HTTPS — `getUserMedia` requires a secure context, and the tailnet's HTTPS certs aren't enabled yet (see `audio-pipeline.md`). Latency is also marginally over the 45s target on 60s+ clips. See [`docs/plan.md`](docs/plan.md) for the task list, [`docs/dogfooding.md`](docs/dogfooding.md) for usage notes, and [`docs/risks.md`](docs/risks.md) for known unknowns.
+
+Run it: `uv sync && uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload`, then open http://localhost:8000 (requires Ollama running with `qwen2.5:7b-instruct-q4_K_M` pulled).
 
 ## License
 

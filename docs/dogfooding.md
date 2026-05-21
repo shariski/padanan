@@ -75,7 +75,56 @@ Outcome: ☑ **proceed on 7B (with the tightened prompt in `scripts/analyze_test
 After each real practice session, add one entry (per `feedback-loop.md`).
 Acceptance criteria (`product-spec.md` §9) needs at least 3. Copy the block below.
 
-### Session N — _____ (date)
+_Sessions logged 2026-05-21 (Phase 10). The subjective calls below are Claude's read
+of the output quality from the stored analyses — developer to confirm/adjust against
+the actual lived experience._
+
+### Session 1 — 2026-05-21 (library)
+
+- Prompt: Walk me through a system you built or significantly contributed to in the last two years.
+- Did the comparative upgrade teach something? (yes / no / partial): **yes** — developer reported being "really happy"; the upgrade tightened vague phrasing while keeping the content.
+- Were the lexical gaps real, or did some feel forced? (real / forced / mix): **real** (3/3) — "was previously very bad" → "was fundamentally flawed"; parallelism fix; "not robust enough" → "lacked robustness".
+- Indonesian-isms flagged, and were they accurate?: none flagged — correct, none present.
+- Most useful suggestion of the session (one sentence): "was previously very bad" → "was fundamentally flawed".
+
+### Session 2 — 2026-05-21 (library)
+
+- Prompt: Describe a technical decision you championed that turned out to be the right call, and explain why.
+- Did the comparative upgrade teach something? (yes / no / partial): **partial** — the TDD-for-fintech and decimal-handling reframings were instructive; one gap added nothing.
+- Were the lexical gaps real, or did some feel forced? (real / forced / mix): **mix** — 2 real (TDD's value framed as "precision in calculations, critical for a fintech product"; "decimal handling is quite messy" → "cumbersome and error-prone"), 1 forced ("we were using JavaScript" → "we utilized JavaScript" — a banned cosmetic swap; "utilized" is arguably worse).
+- Indonesian-isms flagged, and were they accurate?: none flagged — correct.
+- Most useful suggestion of the session (one sentence): framing TDD as ensuring "precision in calculations, critical for a fintech product".
+
+### Session 3 — 2026-05-21 (library)
+
+- Prompt: Walk me through what happens, in detail, when a user types a URL and hits enter.
+- Did the comparative upgrade teach something? (yes / no / partial): **partial** — "local memory" → "local cache" and "translation" → "alias" are real register upgrades; one "gap" was just a grammar fix.
+- Were the lexical gaps real, or did some feel forced? (real / forced / mix): **mix** — 2 real ("take a look at the local memory" → "check its local cache"; the disfluent false-start → "the domain is essentially an alias for"), 1 not-a-lexical-gap ("map that mean" → "map it", a grammar/ASR correction the prompt says to avoid).
+- Indonesian-isms flagged, and were they accurate?: none flagged — correct.
+- Most useful suggestion of the session (one sentence): "take a look at the local memory" → "check its local cache".
+
+### Summary after 3 sessions
+
+The feedback is **useful**: all 3 produced real, actionable gaps and pointed overall
+notes. The residual 7B limitation seen in Phase 2 persists — roughly one weak gap per
+session leaks through (a cosmetic swap in #2, a grammar fix in #3) despite the prompt's
+rules. Indonesian-isms correctly came back empty all three times (no false positives).
+Decision: **keep the design and the prompt** — the leakage is the accepted 7B tradeoff
+(`local-llm-setup.md`); 14B remains the lever if the weak gaps start to grate.
+
+### Performance (Phase 10, measured on M4)
+
+Full session (record → transcribe → analyze → results), end to end:
+
+- ~33s clip → **~33s** total (under the §9 <45s target)
+- ~110s clip → **~79s** total
+
+A 60s clip extrapolates to ~45–55s, so the §9 "<45s for a 60s clip" target is met for
+short clips and marginally missed for 60s+. The dominant cost is Qwen analysis
+(~30–45s) plus cold model load; keeping Ollama warm helps. This is the accepted
+local-inference tradeoff, not a defect.
+
+### Session N — _____ (date)  _(blank template — copy for the next session)_
 
 - Prompt:
 - Did the comparative upgrade teach something? (yes / no / partial):

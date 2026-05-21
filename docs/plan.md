@@ -88,11 +88,11 @@ The point of this phase is to know whether Qwen 7B can produce useful feedback *
 
 ## Phase 10 — Polish and dogfood
 
-- [ ] Real end-to-end run on Mac mini: pick library prompt → record 60s → see analysis
-- [ ] Real end-to-end run on iPhone via Tailscale
-- [ ] Three dogfooding sessions on real interview prep, with notes in `docs/dogfooding.md`
-- [ ] Final pass on the prompt based on what dogfooding revealed
-- [ ] Confirm acceptance criteria in `product-spec.md` §9 are all checked
+- [x] Real end-to-end run on Mac mini: pick library prompt → record 60s → see analysis _(developer reported being "really happy")_
+- [~] Real end-to-end run on iPhone via Tailscale _(Tailscale up; app reachable over the tailnet and viewable on iPhone, but recording is blocked by the secure-context requirement — needs Tailscale HTTPS enabled + `tailscale serve` on port 8000)_
+- [x] Three dogfooding sessions on real interview prep, with notes in `docs/dogfooding.md`
+- [x] Final pass on the prompt based on what dogfooding revealed _(reviewed; kept the prompt — the ~1-weak-gap-per-session leakage is the accepted 7B tradeoff; 14B is the lever if it grates)_
+- [ ] Confirm acceptance criteria in `product-spec.md` §9 are all checked _(audited: 6/8 met; iPhone/Tailscale deferred, 60s-clip latency marginally over 45s)_
 
 ---
 

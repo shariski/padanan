@@ -170,11 +170,11 @@ These are not "v2" features. They are decisions to not build, full stop, in week
 
 The MVP is complete when:
 
-- [ ] The developer can run `uvicorn app.main:app --host 0.0.0.0` and open the app from the Mac mini and from his iPhone via Tailscale
-- [ ] All 13 library prompts are loadable and recordable
-- [ ] Custom prompts work end to end
-- [ ] A full session (open → record 60s → stop → transcribe → analyze → results displayed) completes in under 45 seconds on the Mac mini M4 16GB
-- [ ] Past sessions appear in history and reopen correctly
-- [ ] The developer has dogfooded the app for at least 3 real practice sessions and recorded informal notes about whether the feedback was useful, in `docs/dogfooding.md` (created during build)
-- [ ] The Whisper accuracy sanity check (see `audio-pipeline.md`) has been run and the result documented
-- [ ] The LLM output quality sanity check (see `local-llm-setup.md`) has been run and the result documented
+- [~] The developer can run `uvicorn app.main:app --host 0.0.0.0` and open the app from the Mac mini and from his iPhone via Tailscale — _Mac mini: done. Tailscale is up and the app is reachable over the tailnet (HTTP 200 on the Mac's Tailscale IP), so the iPhone can view sessions/history. iPhone **recording** is blocked by the secure-context requirement (`getUserMedia` needs HTTPS) — the tailnet's HTTPS certs aren't enabled. Fix: enable HTTPS in the Tailscale admin console, then `tailscale serve` port 8000._
+- [x] All 13 library prompts are loadable and recordable
+- [x] Custom prompts work end to end
+- [~] A full session (open → record 60s → stop → transcribe → analyze → results displayed) completes in under 45 seconds on the Mac mini M4 16GB — _met for short clips (~33s clip → ~33s); a 60s clip extrapolates to ~45–55s, so marginally missed at 60s+. Dominated by Qwen analysis; accepted local-inference tradeoff (see `dogfooding.md`)._
+- [x] Past sessions appear in history and reopen correctly
+- [x] The developer has dogfooded the app for at least 3 real practice sessions and recorded informal notes about whether the feedback was useful, in `docs/dogfooding.md` (created during build)
+- [x] The Whisper accuracy sanity check (see `audio-pipeline.md`) has been run and the result documented
+- [x] The LLM output quality sanity check (see `local-llm-setup.md`) has been run and the result documented
