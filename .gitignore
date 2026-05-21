@@ -16,3 +16,4 @@ venv/
 # Local tool state
 .claude/settings.local.json
 .code-review-graph/
+.playwright-mcp/

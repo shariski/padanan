@@ -41,11 +41,11 @@ The point of this phase is to know whether Qwen 7B can produce useful feedback *
 
 ## Phase 3 — Backend skeleton
 
-- [ ] Create `app/main.py` with a FastAPI app and a single `/` route returning a hello template
-- [ ] Run `uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload` and confirm reachable from the Mac mini browser
-- [ ] Confirm reachable from the iPhone via Tailscale hostname
-- [ ] Add static file mount and serve `htmx.min.js` locally
-- [ ] Add a `pages` Jinja2 template directory and a base layout
+- [x] Create `app/main.py` with a FastAPI app and a single `/` route returning a hello template
+- [x] Run `uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload` and confirm reachable from the Mac mini browser _(verified in-browser: page renders + HTMX swap works)_
+- [ ] Confirm reachable from the iPhone via Tailscale hostname _(deferred with Tailscale — Phase 5)_
+- [x] Add static file mount and serve `htmx.min.js` locally _(htmx 2.0.4, pinned)_
+- [x] Add a `pages` Jinja2 template directory and a base layout _(used `app/templates/` per CLAUDE.md repo structure, not `pages/`; base.html + index.html)_
 
 ## Phase 4 — Prompt library
 

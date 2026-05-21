@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Padanan{% endblock %}
+{% block content %}
+<section class="card">
+  <h2>Skeleton is running.</h2>
+  <p>FastAPI + Jinja2 + HTMX are wired up. This is the Phase 3 baseline — the
+    session, recording, and results screens come next.</p>
+  <p>
+    <button hx-get="/ping" hx-target="#ping-result" hx-swap="innerHTML">
+      Test HTMX
+    </button>
+    <span id="ping-result" class="muted"></span>
+  </p>
+</section>
+{% endblock %}
