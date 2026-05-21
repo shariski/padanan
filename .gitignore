@@ -17,3 +17,6 @@ venv/
 .claude/settings.local.json
 .code-review-graph/
 .playwright-mcp/
+
+# Local TLS certs (mkcert) — contains a private key, never commit
+certs/
