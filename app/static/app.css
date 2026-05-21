@@ -117,3 +117,20 @@ button:hover { opacity: 0.92; }
 .prompt-display { margin-bottom: 1.5rem; }
 .prompt-source { margin: 0 0 0.25rem; font-size: 0.85rem; text-transform: capitalize; }
 .prompt-text { margin: 0; font-size: 1.5rem; line-height: 1.35; }
+
+/* Recorder */
+#recorder-controls { display: flex; align-items: center; gap: 1.25rem; }
+
+#record-btn { font-size: 1.05rem; padding: 0.7rem 1.4rem; }
+#record-btn.recording { background: var(--fg); }
+
+.timer {
+  font-variant-numeric: tabular-nums;
+  font-size: 1.5rem;
+  color: var(--fg);
+}
+
+.timer.amber { color: #b8860b; }
+.timer.red { color: var(--accent); }
+
+#status { margin-top: 1rem; margin-bottom: 0; }

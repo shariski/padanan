@@ -56,10 +56,10 @@ The point of this phase is to know whether Qwen 7B can produce useful feedback *
 
 ## Phase 5 — Recording flow
 
-- [ ] Recording screen template: prompt at top, big Record/Stop button, timer
-- [ ] JS for `MediaRecorder` (vanilla, no framework): start, stop, collect chunks, POST blob to `/api/sessions`
-- [ ] Backend route `POST /api/sessions` that creates a session row, saves the audio file to `data/recordings/<id>.<ext>`, returns the session id
-- [ ] Confirm round-trip works on Mac mini Chrome and on iPhone Safari (via Tailscale, with the secure-context caveat from `audio-pipeline.md`)
+- [x] Recording screen template: prompt at top, big Record/Stop button, timer _(timer colors: black <90s, amber 90–120s, red >120s per §3.2)_
+- [x] JS for `MediaRecorder` (vanilla, no framework): start, stop, collect chunks, POST blob to `/api/sessions` _(`app/static/recorder.js`; secure-context guard included)_
+- [x] Backend route `POST /api/sessions` that creates a session row, saves the audio file to `data/recordings/<id>.<ext>`, returns the session id _(+ `app/db.py` with the `sessions` table; duration via ffprobe)_
+- [x] Confirm round-trip works on Mac mini Chrome and on iPhone Safari (via Tailscale, with the secure-context caveat from `audio-pipeline.md`) _(live mic test passed in Mac Chrome — record → upload round-trip works; iPhone/Tailscale still deferred to when Tailscale is set up)_
 
 ## Phase 6 — Transcription wiring
 

@@ -8,7 +8,15 @@
   <h2 class="prompt-text">{{ prompt_text }}</h2>
 </section>
 
-<section class="recorder card">
-  <p class="muted">Recording controls (Record/Stop, timer, upload) arrive in Phase 5.</p>
+<section class="recorder card"
+         data-prompt-text="{{ prompt_text }}"
+         data-prompt-source="{{ prompt_source }}">
+  <div id="recorder-controls">
+    <button id="record-btn" type="button">● Record</button>
+    <span id="timer" class="timer">00:00</span>
+  </div>
+  <p id="status" class="muted"></p>
 </section>
+
+<script src="/static/recorder.js" defer></script>
 {% endblock %}
