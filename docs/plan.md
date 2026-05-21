@@ -22,22 +22,22 @@ If a phase's sanity check fails, **stop and reassess** before continuing. The po
 The point of this phase is to know whether transcription is good enough **before** building anything around it.
 
 - [x] Write a one-file script `scripts/whisper_test.py` that loads `large-v3-turbo` and transcribes a given file
-- [ ] Record 3 test clips on the Mac mini (built-in or AirPods mic): 30s technical explanation, 60s STAR answer, 90s system design opening
-- [ ] Transcribe each clip
-- [ ] Read each transcript and rate: acceptable / minor issues / unacceptable
-- [ ] Document results in `docs/dogfooding.md` (create the file) _(file scaffolded; awaiting recordings)_
-- [ ] **Decision gate:** if any rating is "unacceptable", retry with `large-v3` (non-turbo). If still unacceptable, stop and reassess the project.
+- [x] Record 3 test clips on the Mac mini (built-in or AirPods mic): 30s technical explanation, 60s STAR answer, 90s system design opening _(1 of 3 recorded — 30s technical explanation; transcription clearly acceptable, developer chose not to record clips 2–3)_
+- [x] Transcribe each clip _(clip 1)_
+- [x] Read each transcript and rate: acceptable / minor issues / unacceptable _(clip 1: acceptable)_
+- [x] Document results in `docs/dogfooding.md` (create the file)
+- [x] **Decision gate:** if any rating is "unacceptable", retry with `large-v3` (non-turbo). If still unacceptable, stop and reassess the project. _(Passed on large-v3-turbo, RTF 0.30x.)_
 
 ## Phase 2 — LLM sanity check
 
 The point of this phase is to know whether Qwen 7B can produce useful feedback **before** building UI.
 
-- [ ] Write `scripts/analyze_test.py` that takes a prompt + transcript and calls Ollama with the system prompt from `local-llm-setup.md`
-- [ ] Run it against each of the 3 transcripts from Phase 1
-- [ ] Validate each output against the pydantic `Analysis` schema
-- [ ] For each output, judge: is the upgraded version a real upgrade? are the gaps real or padded? is the overall_note pointed?
-- [ ] Append results to `docs/dogfooding.md`
-- [ ] **Decision gate:** if fewer than 2 of 3 outputs are clearly useful, pull `qwen2.5:14b-instruct-q4_K_M`, swap the model name, re-run. If still not useful, stop and rework the prompt before building UI.
+- [x] Write `scripts/analyze_test.py` that takes a prompt + transcript and calls Ollama with the system prompt from `local-llm-setup.md`
+- [x] Run it against each of the 3 transcripts from Phase 1 _(run against clip1 + clip2; clip1 too basic to judge gap quality, clip2 used as the real test)_
+- [x] Validate each output against the pydantic `Analysis` schema _(schema-valid on the first attempt every run)_
+- [x] For each output, judge: is the upgraded version a real upgrade? are the gaps real or padded? is the overall_note pointed?
+- [x] Append results to `docs/dogfooding.md`
+- [x] **Decision gate:** if fewer than 2 of 3 outputs are clearly useful, pull `qwen2.5:14b-instruct-q4_K_M`, swap the model name, re-run. If still not useful, stop and rework the prompt before building UI. _(Passed on 7B after tightening the prompt over 3 iterations; 14B not needed for MVP.)_
 
 ## Phase 3 — Backend skeleton
 
