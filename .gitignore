@@ -1,0 +1,18 @@
+# Data — audio recordings and the SQLite DB (see docs/product-spec.md §6)
+data/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+
+# macOS
+.DS_Store
+
+# Local tool state
+.claude/settings.local.json
+.code-review-graph/
