@@ -1,0 +1,39 @@
+[project]
+name = "padanan"
+version = "0.1.0"
+description = "Personal English speaking coach — lexical retrieval practice (local Whisper + local LLM)"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "httpx",
+    "pydantic",
+    "jinja2",
+    "faster-whisper",
+    "aiosqlite",
+]
+
+[dependency-groups]
+dev = [
+    "ruff",
+]
+
+# This is an application run via `uvicorn app.main:app`, not an installable
+# library — uv manages the environment and deps but does not build the project.
+[tool.uv]
+package = false
+
+# Point the editor's type checker at the uv-managed virtualenv so it can resolve
+# installed dependencies. Not strict type checking — just import resolution.
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+# E/F: pyflakes + pycodestyle. I: import sorting into stdlib/third-party/local
+# groups, as required by CLAUDE.md.
+select = ["E", "F", "I"]
