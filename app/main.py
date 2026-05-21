@@ -20,7 +20,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
-from fastapi.responses import HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -126,6 +126,26 @@ async def view_session(request: Request, session_id: int) -> HTMLResponse:
         "session_view.html",
         {"session": session, "analysis": analysis, "analysis_error": analysis_error},
     )
+
+
+@app.get("/sessions/{session_id}/audio")
+async def session_audio(session_id: int) -> FileResponse:
+    session = await db.get_session(session_id)
+    if session is None or not session["audio_path"]:
+        raise HTTPException(status_code=404, detail="Recording not found")
+    path = db.RECORDINGS_DIR / session["audio_path"]
+    if not path.is_file():
+        raise HTTPException(status_code=404, detail="Recording file missing")
+    return FileResponse(path)
+
+
+@app.get("/sessions/{session_id}/retry", response_class=HTMLResponse)
+async def retry_session(request: Request, session_id: int) -> HTMLResponse:
+    """Re-record the same prompt — feedback-loop.md's key active-recall loop."""
+    session = await db.get_session(session_id)
+    if session is None:
+        raise HTTPException(status_code=404, detail="Session not found")
+    return _recording_screen(request, session["prompt_text"], session["prompt_source"])
 
 
 def _recording_screen(request: Request, prompt_text: str, prompt_source: str) -> HTMLResponse:

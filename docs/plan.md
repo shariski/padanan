@@ -77,9 +77,9 @@ The point of this phase is to know whether Qwen 7B can produce useful feedback *
 
 ## Phase 8 — Results screen
 
-- [ ] Results template: prompt (collapsible), transcript, upgraded version (side-by-side or stacked responsively), lexical gaps list, indonesian-isms list (hidden if empty), overall note, Retry and New session buttons
-- [ ] "Retry" button starts a new session with the same prompt
-- [ ] "Play original recording" small button that uses the saved audio file
+- [x] Results template: prompt (collapsible), transcript, upgraded version (side-by-side or stacked responsively), lexical gaps list, indonesian-isms list (hidden if empty), overall note, Retry and New session buttons _(side-by-side via CSS grid ≥760px; collapsible via native `<details>`)_
+- [x] "Retry" button starts a new session with the same prompt _(GET `/sessions/{id}/retry` reuses the prompt + source)_
+- [x] "Play original recording" small button that uses the saved audio file _(native `<audio>` served by GET `/sessions/{id}/audio`)_
 
 ## Phase 9 — History
 
