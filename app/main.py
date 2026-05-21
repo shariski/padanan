@@ -17,6 +17,7 @@ import asyncio
 import json
 import subprocess
 from contextlib import asynccontextmanager
+from datetime import datetime
 from pathlib import Path
 
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
@@ -111,21 +112,30 @@ async def view_session(request: Request, session_id: int) -> HTMLResponse:
     if session is None:
         raise HTTPException(status_code=404, detail="Session not found")
 
-    # analysis_json holds either a valid Analysis or an {"error": ...} marker.
-    analysis = None
-    analysis_error = None
-    if session["analysis_json"]:
-        parsed = json.loads(session["analysis_json"])
-        if isinstance(parsed, dict) and "error" in parsed:
-            analysis_error = parsed["error"]
-        else:
-            analysis = parsed
-
+    analysis, analysis_error = _parse_analysis(session["analysis_json"])
     return templates.TemplateResponse(
         request,
         "session_view.html",
         {"session": session, "analysis": analysis, "analysis_error": analysis_error},
     )
+
+
+@app.get("/history", response_class=HTMLResponse)
+async def history(request: Request) -> HTMLResponse:
+    rows = []
+    for s in await db.list_sessions():
+        analysis, _ = _parse_analysis(s["analysis_json"])
+        gaps = analysis["lexical_gaps"] if analysis else []
+        teaser = f"{gaps[0]['spoken']} → {gaps[0]['suggested']}" if gaps else None
+        rows.append(
+            {
+                "id": s["id"],
+                "when": _format_ts(s["created_at"]),
+                "prompt_text": s["prompt_text"],
+                "teaser": teaser,
+            }
+        )
+    return templates.TemplateResponse(request, "history.html", {"rows": rows})
 
 
 @app.get("/sessions/{session_id}/audio")
@@ -189,3 +199,18 @@ def _probe_duration(path: Path) -> float:
         return round(float(result.stdout.strip()), 2)
     except ValueError:
         return 0.0
+
+
+def _parse_analysis(analysis_json: str | None) -> tuple[dict | None, str | None]:
+    """Turn stored analysis_json into (analysis, error). Both None if absent."""
+    if not analysis_json:
+        return None, None
+    parsed = json.loads(analysis_json)
+    if isinstance(parsed, dict) and "error" in parsed:
+        return None, parsed["error"]
+    return parsed, None
+
+
+def _format_ts(iso: str) -> str:
+    """ISO 8601 (UTC) -> readable local time for the history list."""
+    return datetime.fromisoformat(iso).astimezone().strftime("%b %d, %Y · %H:%M")

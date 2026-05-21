@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Padanan — history{% endblock %}
+{% block content %}
+<a href="/" class="back">← New session</a>
+<h2>History</h2>
+
+{% if rows %}
+<ul class="history">
+  {% for row in rows %}
+  <li>
+    <a href="/sessions/{{ row.id }}">
+      <span class="ts muted">{{ row.when }}</span>
+      <span class="hprompt">{{ row.prompt_text | truncate(90) }}</span>
+      {% if row.teaser %}<span class="teaser muted">{{ row.teaser }}</span>{% endif %}
+    </a>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="muted">No sessions yet. <a href="/">Start one.</a></p>
+{% endif %}
+{% endblock %}

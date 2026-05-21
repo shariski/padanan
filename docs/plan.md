@@ -83,8 +83,8 @@ The point of this phase is to know whether Qwen 7B can produce useful feedback *
 
 ## Phase 9 — History
 
-- [ ] `/history` route showing reverse-chronological session list
-- [ ] Each row links to a `/sessions/<id>` view that renders the same results template
+- [x] `/history` route showing reverse-chronological session list _(rows: local-time timestamp, truncated prompt, first lexical-gap teaser per §3.4; "History" link in the header)_
+- [x] Each row links to a `/sessions/<id>` view that renders the same results template
 
 ## Phase 10 — Polish and dogfood
 

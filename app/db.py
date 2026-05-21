@@ -81,3 +81,11 @@ async def get_session(session_id: int) -> dict | None:
         cur = await conn.execute("SELECT * FROM sessions WHERE id = ?", (session_id,))
         row = await cur.fetchone()
         return dict(row) if row else None
+
+
+async def list_sessions() -> list[dict]:
+    """All sessions, most recent first."""
+    async with aiosqlite.connect(DB_PATH) as conn:
+        conn.row_factory = aiosqlite.Row
+        cur = await conn.execute("SELECT * FROM sessions ORDER BY created_at DESC, id DESC")
+        return [dict(r) for r in await cur.fetchall()]

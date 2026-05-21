@@ -20,7 +20,13 @@ body {
 .site-header {
   border-bottom: 1px solid var(--border);
   padding: 1.25rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
+
+.site-nav a { color: var(--muted); text-decoration: none; font-size: 0.9rem; }
+.site-nav a:hover { color: var(--fg); }
 
 .site-header h1 { margin: 0; font-size: 1.25rem; }
 .site-header h1 a { color: var(--fg); text-decoration: none; }
@@ -201,3 +207,22 @@ button:hover { opacity: 0.92; }
 
 .button:hover { opacity: 0.92; }
 .button.secondary { background: none; color: var(--fg); border: 1px solid var(--border); }
+
+/* History list */
+.history { list-style: none; margin: 0; padding: 0; }
+.history li { margin-bottom: 0.6rem; }
+
+.history a {
+  display: block;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  color: var(--fg);
+  text-decoration: none;
+}
+
+.history a:hover { border-color: var(--accent); }
+.history .ts { display: block; font-size: 0.8rem; }
+.history .hprompt { display: block; margin-top: 0.15rem; }
+.history .teaser { display: block; margin-top: 0.35rem; font-size: 0.9rem; }
