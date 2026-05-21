@@ -70,10 +70,10 @@ The point of this phase is to know whether Qwen 7B can produce useful feedback *
 
 ## Phase 7 — Analysis wiring
 
-- [ ] `app/analyze.py` with the system prompt as a constant, `Analysis` pydantic schema, `analyze(transcript, prompt_text)` async function calling Ollama
-- [ ] JSON validation with one retry on schema failure (see `local-llm-setup.md`)
-- [ ] After transcription, call `analyze()` and store the result JSON in `sessions.analysis_json`
-- [ ] On schema-validation failure after retry, mark the session as failed and surface the error
+- [x] `app/analyze.py` with the system prompt as a constant, `Analysis` pydantic schema, `analyze(transcript, prompt_text)` async function calling Ollama _(prompt in `app/prompts/analyze_system.txt`, the single source also used by `scripts/analyze_test.py`)_
+- [x] JSON validation with one retry on schema failure (see `local-llm-setup.md`)
+- [x] After transcription, call `analyze()` and store the result JSON in `sessions.analysis_json`
+- [x] On schema-validation failure after retry, mark the session as failed and surface the error _(stored as `{"error": ...}`; results page shows "Analysis failed — try again"; also covers an unreachable Ollama)_
 
 ## Phase 8 — Results screen
 

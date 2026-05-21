@@ -8,12 +8,58 @@
   <h2 class="prompt-text">{{ session.prompt_text }}</h2>
 </section>
 
+{% if analysis_error %}
+<section class="card error">
+  <p>Analysis failed — {{ analysis_error }}. Try recording again.</p>
+</section>
+{% endif %}
+
 <section class="result-block">
   <h3>Transcript</h3>
   <p class="transcript">{{ session.transcript }}</p>
 </section>
 
-<section class="card">
-  <p class="muted">The senior-IC upgrade, lexical gaps, and overall note wire in next (Phase 7).</p>
+{% if analysis %}
+<section class="result-block">
+  <h3>Senior-IC upgrade</h3>
+  <p>{{ analysis.upgraded_version }}</p>
 </section>
+
+{% if analysis.lexical_gaps %}
+<section class="result-block">
+  <h3>Lexical gaps</h3>
+  <ul class="gaps">
+    {% for gap in analysis.lexical_gaps %}
+    <li>
+      <span class="spoken">{{ gap.spoken }}</span>
+      <span class="arrow">→</span>
+      <span class="suggested">{{ gap.suggested }}</span>
+      <span class="reason muted">{{ gap.reason }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+{% if analysis.indonesian_isms %}
+<section class="result-block">
+  <h3>Indonesian-isms</h3>
+  <ul class="gaps">
+    {% for gap in analysis.indonesian_isms %}
+    <li>
+      <span class="spoken">{{ gap.spoken }}</span>
+      <span class="arrow">→</span>
+      <span class="suggested">{{ gap.suggested }}</span>
+      <span class="reason muted">{{ gap.reason }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+<section class="result-block">
+  <h3>Overall note</h3>
+  <p>{{ analysis.overall_note }}</p>
+</section>
+{% endif %}
 {% endblock %}

@@ -66,6 +66,15 @@ async def set_transcript(session_id: int, transcript: str) -> None:
         await conn.commit()
 
 
+async def set_analysis(session_id: int, analysis_json: str) -> None:
+    async with aiosqlite.connect(DB_PATH) as conn:
+        await conn.execute(
+            "UPDATE sessions SET analysis_json = ? WHERE id = ?",
+            (analysis_json, session_id),
+        )
+        await conn.commit()
+
+
 async def get_session(session_id: int) -> dict | None:
     async with aiosqlite.connect(DB_PATH) as conn:
         conn.row_factory = aiosqlite.Row

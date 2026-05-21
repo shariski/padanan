@@ -24,7 +24,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from . import db, transcribe
+from . import analyze, db, transcribe
 
 BASE_DIR = Path(__file__).parent
 
@@ -90,9 +90,17 @@ async def create_session(
     await db.attach_audio(session_id, audio_path, _probe_duration(full_path))
 
     # Transcribe synchronously (MVP, single user). Whisper blocks, so run it off
-    # the event loop. Analysis (Phase 7) happens on the session view next.
+    # the event loop.
     transcript = await asyncio.to_thread(transcribe.transcribe_audio, full_path)
     await db.set_transcript(session_id, transcript)
+
+    # Analyze. On failure, store an error marker so the results page can surface
+    # it loudly (local-llm-setup.md) — never a silent fallback.
+    try:
+        result = await analyze.analyze(transcript, prompt_text)
+        await db.set_analysis(session_id, result.model_dump_json())
+    except analyze.AnalysisError as e:
+        await db.set_analysis(session_id, json.dumps({"error": str(e)}))
 
     return {"session_id": session_id, "redirect": f"/sessions/{session_id}"}
 
@@ -102,7 +110,22 @@ async def view_session(request: Request, session_id: int) -> HTMLResponse:
     session = await db.get_session(session_id)
     if session is None:
         raise HTTPException(status_code=404, detail="Session not found")
-    return templates.TemplateResponse(request, "session_view.html", {"session": session})
+
+    # analysis_json holds either a valid Analysis or an {"error": ...} marker.
+    analysis = None
+    analysis_error = None
+    if session["analysis_json"]:
+        parsed = json.loads(session["analysis_json"])
+        if isinstance(parsed, dict) and "error" in parsed:
+            analysis_error = parsed["error"]
+        else:
+            analysis = parsed
+
+    return templates.TemplateResponse(
+        request,
+        "session_view.html",
+        {"session": session, "analysis": analysis, "analysis_error": analysis_error},
+    )
 
 
 def _recording_screen(request: Request, prompt_text: str, prompt_source: str) -> HTMLResponse:
