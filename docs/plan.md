@@ -8,24 +8,24 @@ If a phase's sanity check fails, **stop and reassess** before continuing. The po
 
 ## Phase 0 — Environment
 
-- [ ] Install Ollama and start `ollama serve` as a launchd service or background process
-- [ ] Pull `qwen2.5:7b-instruct-q4_K_M`
-- [ ] Verify Ollama responds to a curl POST at `localhost:11434/api/chat`
-- [ ] Install `ffmpeg` (`brew install ffmpeg`)
-- [ ] Confirm Python 3.11+ is available
-- [ ] Create project directory, `git init`, copy `.gitignore` (Python + macOS + `data/`)
-- [ ] Set up `pyproject.toml` with `fastapi`, `uvicorn[standard]`, `httpx`, `pydantic`, `jinja2`, `faster-whisper`, `aiosqlite`, `ruff`
-- [ ] Install Tailscale on the Mac mini and verify the device is reachable from the iPhone
+- [x] Install Ollama and start `ollama serve` as a launchd service or background process
+- [x] Pull `qwen2.5:7b-instruct-q4_K_M`
+- [x] Verify Ollama responds to a curl POST at `localhost:11434/api/chat`
+- [x] Install `ffmpeg` (`brew install ffmpeg`)
+- [x] Confirm Python 3.11+ is available
+- [x] Create project directory, `git init`, copy `.gitignore` (Python + macOS + `data/`)
+- [x] Set up `pyproject.toml` with `fastapi`, `uvicorn[standard]`, `httpx`, `pydantic`, `jinja2`, `faster-whisper`, `aiosqlite`, `ruff`
+- [ ] Install Tailscale on the Mac mini and verify the device is reachable from the iPhone _(deferred — localhost-only until Phase 5 remote recording)_
 
 ## Phase 1 — Whisper sanity check
 
 The point of this phase is to know whether transcription is good enough **before** building anything around it.
 
-- [ ] Write a one-file script `scripts/whisper_test.py` that loads `large-v3-turbo` and transcribes a given file
+- [x] Write a one-file script `scripts/whisper_test.py` that loads `large-v3-turbo` and transcribes a given file
 - [ ] Record 3 test clips on the Mac mini (built-in or AirPods mic): 30s technical explanation, 60s STAR answer, 90s system design opening
 - [ ] Transcribe each clip
 - [ ] Read each transcript and rate: acceptable / minor issues / unacceptable
-- [ ] Document results in `docs/dogfooding.md` (create the file)
+- [ ] Document results in `docs/dogfooding.md` (create the file) _(file scaffolded; awaiting recordings)_
 - [ ] **Decision gate:** if any rating is "unacceptable", retry with `large-v3` (non-turbo). If still unacceptable, stop and reassess the project.
 
 ## Phase 2 — LLM sanity check
