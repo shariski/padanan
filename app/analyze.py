@@ -36,11 +36,17 @@ class Gap(BaseModel):
     reason: str
 
 
+class ContentNote(BaseModel):
+    kind: str  # "missing" | "weak" | "check"
+    note: str
+
+
 class Analysis(BaseModel):
     transcript_cleaned: str
     upgraded_version: str
     lexical_gaps: list[Gap]
     indonesian_isms: list[Gap]
+    content_feedback: list[ContentNote] = []
     overall_note: str
 
 
@@ -84,7 +90,7 @@ async def _chat(client: httpx.AsyncClient, messages: list[dict]) -> str:
         "messages": messages,
         "stream": False,
         "format": "json",
-        "options": {"temperature": 0.3, "num_predict": 1500},
+        "options": {"temperature": 0.3, "num_predict": 2000},
     }
     r = await client.post(OLLAMA_URL, json=payload)
     r.raise_for_status()

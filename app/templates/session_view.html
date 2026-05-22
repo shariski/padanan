@@ -59,6 +59,20 @@
 </section>
 {% endif %}
 
+{% if analysis.content_feedback %}
+<section class="result-block">
+  <h3>Content to check</h3>
+  <ul class="content-notes">
+    {% for item in analysis.content_feedback %}
+    <li>
+      <span class="kind kind-{{ item.kind }}">{{ item.kind }}</span>
+      <span class="note">{{ item.note }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
 <section class="result-block">
   <h3>Overall note</h3>
   <p>{{ analysis.overall_note }}</p>

@@ -161,6 +161,20 @@ button:hover { opacity: 0.92; }
 .gaps .suggested { font-weight: 600; }
 .gaps .reason { display: block; font-size: 0.9rem; margin-top: 0.15rem; }
 
+.content-notes { list-style: none; margin: 0; padding: 0; }
+.content-notes li { margin-bottom: 0.7rem; display: flex; gap: 0.6rem; align-items: baseline; }
+.content-notes .kind {
+  flex: none;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.content-notes .kind-check { color: var(--accent); border-color: var(--accent); }
+
 .card.error { border-color: var(--accent); }
 .card.error p { margin: 0; color: var(--accent); }
 

@@ -51,11 +51,17 @@ class Gap(BaseModel):
     reason: str
 
 
+class ContentNote(BaseModel):
+    kind: str  # "missing" | "weak" | "check"
+    note: str
+
+
 class Analysis(BaseModel):
     transcript_cleaned: str
     upgraded_version: str
     lexical_gaps: list[Gap]
     indonesian_isms: list[Gap]
+    content_feedback: list[ContentNote] = []
     overall_note: str
 
 
@@ -74,7 +80,7 @@ def call_ollama(messages: list[dict]) -> tuple[str, dict]:
         "messages": messages,
         "stream": False,
         "format": "json",
-        "options": {"temperature": 0.3, "num_predict": 1500},
+        "options": {"temperature": 0.3, "num_predict": 2000},
     }
     with httpx.Client(timeout=120) as client:
         r = client.post(OLLAMA_URL, json=payload)
@@ -123,6 +129,12 @@ def render(analysis: Analysis) -> None:
             print(f'{i}. "{g.spoken}" → "{g.suggested}"\n   {g.reason}')
     else:
         print("\n--- INDONESIAN-ISMS --- (none)")
+    if analysis.content_feedback:
+        print(f"\n--- CONTENT FEEDBACK ({len(analysis.content_feedback)}) ---")
+        for i, c in enumerate(analysis.content_feedback, 1):
+            print(f"{i}. [{c.kind}] {c.note}")
+    else:
+        print("\n--- CONTENT FEEDBACK --- (none)")
     print("\n--- OVERALL NOTE ---")
     print(analysis.overall_note)
 
