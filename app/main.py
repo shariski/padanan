@@ -15,13 +15,16 @@ in after.
 
 import asyncio
 import json
+import os
+import secrets
 import subprocess
 from contextlib import asynccontextmanager
 from datetime import datetime
 from pathlib import Path
 
-from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
+from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -47,7 +50,31 @@ async def lifespan(_app: FastAPI):
     yield
 
 
-app = FastAPI(title="Padanan", lifespan=lifespan)
+# Shared-password auth (HTTP Basic). One login gates the whole app once it's
+# reachable over the public Cloudflare tunnel. Credentials come from the
+# environment; the app refuses to start without a password so it can never be
+# exposed open by accident.
+AUTH_USER = os.environ.get("PADANAN_USER", "padanan")
+_password = os.environ.get("PADANAN_PASSWORD")
+if not _password:
+    raise RuntimeError("PADANAN_PASSWORD must be set (shared login password).")
+AUTH_PASSWORD: str = _password
+
+_security = HTTPBasic()
+
+
+def require_auth(credentials: HTTPBasicCredentials = Depends(_security)) -> None:
+    user_ok = secrets.compare_digest(credentials.username, AUTH_USER)
+    pw_ok = secrets.compare_digest(credentials.password, AUTH_PASSWORD)
+    if not (user_ok and pw_ok):
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid credentials",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+
+
+app = FastAPI(title="Padanan", lifespan=lifespan, dependencies=[Depends(require_auth)])
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 templates = Jinja2Templates(directory=BASE_DIR / "templates")
 
