@@ -43,6 +43,21 @@ Lumping these with general lexical gaps would bury them in noise. Calling them o
 
 If the LLM doesn't find any, the section is hidden. No empty section as filler.
 
+## Why a separate `content_feedback` section — and why it only flags, never grades
+
+The original design above deliberately stopped at *how* the answer is phrased and assumed the *content* was roughly right. Dogfooding showed that wasn't enough: for interview prep the developer also needs to know what a strong answer would have covered that they missed, where their reasoning was thin, and which claims might be wrong. So a third dimension was added — `content_feedback`, a list of `{kind, note}` items:
+
+- **missing** — an important point a strong senior answer to this prompt would cover that wasn't raised.
+- **weak** — a point that was raised but left thin or unjustified.
+- **check** — a specific claim that looks questionable, phrased as *"Verify whether…"*.
+
+Two rules keep this from backfiring:
+
+1. **It is separate from the lexical analysis.** The `upgraded_version` still preserves the speaker's content — it never silently rewrites their *ideas*. Content issues live only in `content_feedback`. Mixing the two would muddy both: you couldn't tell a vocabulary suggestion from a substance disagreement.
+2. **It flags, it does not grade.** `check` items are framed as things to verify, never verdicts. Judging technical correctness is the single hardest thing for a local 7B, and a *confidently wrong* correction right before an interview is worse than none — so the section prompts the developer's own judgment rather than asserting truth. If correctness depth ever proves insufficient on 7B, the lever is Qwen 14B, then cloud-for-content — not loosening this framing.
+
+This is the one place the app crosses from "language coach" toward "mock interviewer" — and it does so cautiously, on purpose.
+
 ## Why no error counts, no scores, no progress meter
 
 A few reasons:
@@ -98,6 +113,10 @@ Useful feedback output:
     { "spoken": "an auto-incrementing ID", "suggested": "a monotonically increasing ID", "reason": "the term is the same idea but lives in the senior-IC vocabulary" }
   ],
   "indonesian_isms": [],
+  "content_feedback": [
+    { "kind": "missing", "note": "You never addressed how slugs stay unique under concurrent writes — a senior answer names the ID-generation or collision strategy." },
+    { "kind": "check", "note": "Verify whether a single auto-increment counter holds at 100M-scale write rates; at high QPS that counter is often the bottleneck." }
+  ],
   "overall_note": "The answer covers the right ground but reads as junior-mid because key technical terms ('Zipfian', 'p99', 'monotonic') are absent. The structure is sound — the upgrade is mostly vocabulary at the noun-phrase level."
 }
 ```

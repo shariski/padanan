@@ -90,6 +90,8 @@ The point of the app is **lexical retrieval practice**: surface the gap between 
 
 The point is **not** to be a generic English tutor. It is not for grammar drilling, accent training, or vocabulary expansion in the abstract. Every feature must serve the specific loop: record answer → see comparative output → notice gap.
 
+Lexical retrieval is still the core, but the app now also surfaces a **separate, hedged content-feedback dimension** (points a strong senior answer would cover that you missed, areas left thin, and claims worth verifying). This was added after dogfooding showed lexical-only feedback wasn't enough for interview prep. It is deliberately framed as *things to check, not authoritative corrections* — a local 7B confidently grading technical correctness is the riskiest thing it does, so content notes prompt the developer's own judgment rather than asserting truth.
+
 ## Audience: who runs this code
 
 One person. The developer. Localhost or Tailscale. No multi-tenancy, no auth, no rate limiting, no observability stack, no Docker, no CI/CD.
@@ -174,7 +176,8 @@ The prompt's job, specifically:
 2. Identify Indonesian-isms (direct-translation artifacts) if any — at B2 upper they will be subtle
 3. Identify lexical gaps — vague words where precise senior-IC vocabulary would serve better
 4. Produce a "senior-IC native version" that preserves the speaker's content and reasoning but upgrades vocabulary and discourse markers
-5. Return all of that as JSON
+5. Surface content feedback — missing/weak/check notes on the answer's substance, kept separate from the lexical upgrade and framed as things to verify, not authoritative corrections
+6. Return all of that as JSON
 
 The full prompt design lives in `docs/feedback-loop.md`. Read it before touching `analyze.py`.
 

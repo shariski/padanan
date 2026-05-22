@@ -142,11 +142,17 @@ The LLM returns JSON matching this shape exactly. The prompt enforces it. The ba
       "reason": "string — one sentence explaining the Indonesian-language pattern that leaked through"
     }
   ],
+  "content_feedback": [
+    {
+      "kind": "string — missing | weak | check",
+      "note": "string — a substance observation specific to this answer; check items are framed as 'verify whether…', never verdicts"
+    }
+  ],
   "overall_note": "string — one or two sentences, the single most useful observation about this answer"
 }
 ```
 
-`lexical_gaps` is the headline. The prompt asks for 3 to 8 items. `indonesian_isms` may be empty.
+`lexical_gaps` is the headline. The prompt asks for 3 to 8 items. `indonesian_isms` may be empty. `content_feedback` is a separate substance layer (missing/weak/check) and may also be empty; it flags points to verify, it does not authoritatively grade correctness.
 
 ## 8. What is explicitly out of scope for MVP
 

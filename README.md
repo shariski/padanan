@@ -11,9 +11,9 @@ The app records a short spoken answer to a technical or behavioral prompt, trans
 1. **Your answer**, cleaned up from the transcript
 2. **A senior-IC native upgrade** of the same content — same idea, sharper vocabulary, better discourse markers — so the gap is visible in context
 
-Plus a short list of **lexical gaps**: places where a more precise word would have served the answer better.
+Plus a short list of **lexical gaps** (places where a more precise word would have served the answer better) and a separate **"content to check"** list — points a strong senior answer would cover that you missed, areas you left thin, and claims worth verifying.
 
-That's the whole product.
+The lexical upgrade is the core; the content notes are framed as prompts for your own judgment, not authoritative corrections — a local 7B confidently grading correctness is the one thing it does worst, so it flags rather than declares.
 
 ## What it deliberately does not do
 
@@ -22,6 +22,7 @@ That's the whole product.
 - No personal vocabulary corpus, no spaced repetition, no cross-session pattern surfacing. These need data from many sessions and are deferred.
 - No grammar drilling. Grammar is rank #2 in pain, and the comparative-output design surfaces grammar issues implicitly when the upgraded version differs.
 - No mobile-native app, no menubar app, no notifications. Web only.
+- No authoritative grading of technical correctness. The content-to-check notes flag points to verify and gaps to consider; they never declare your answer right or wrong, because a local 7B isn't reliable enough to be trusted as a verdict.
 
 These are explicit scope decisions, not "coming soon."
 
