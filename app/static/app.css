@@ -141,6 +141,31 @@ button:hover { opacity: 0.92; }
 
 #status { margin-top: 1rem; margin-bottom: 0; }
 
+/* Processing state — the upload → transcribe → evaluate work runs in one long
+   fetch (recorder.js), so this spinner is the only signal the page is alive;
+   without it a 30–60s wait looks frozen and people assume it failed. */
+.processing {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 1rem;
+  color: var(--muted);
+}
+
+.processing.hidden { display: none; }
+
+.spinner {
+  flex: none;
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
 /* Session view */
 .result-block { margin-bottom: 1.5rem; }
 

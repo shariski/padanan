@@ -6,6 +6,9 @@
   const recordBtn = document.getElementById("record-btn");
   const timerEl = document.getElementById("timer");
   const statusEl = document.getElementById("status");
+  const processingEl = document.getElementById("processing");
+  const processingText = document.getElementById("processing-text");
+  let stageTimers = [];
 
   const promptText = recorder.dataset.promptText;
   const promptSource = recorder.dataset.promptSource;
@@ -74,7 +77,30 @@
     recordBtn.disabled = true;
     recordBtn.textContent = "● Record";
     recordBtn.classList.remove("recording");
-    statusEl.textContent = "Uploading and transcribing… (this can take 10–30s)";
+    showProcessing();
+  }
+
+  // Staged progress for the single long /api/sessions request (upload → Whisper
+  // transcription → LLM evaluation). The delays are approximate cues, not real
+  // backend events — their job is to prove the page is alive and to name the
+  // evaluation step, which is the slow part people were waiting on blindly.
+  function showProcessing() {
+    statusEl.textContent = "";
+    processingText.textContent = "Uploading your recording…";
+    processingEl.classList.remove("hidden");
+    const stages = [
+      [2500, "Transcribing your answer…"],
+      [12000, "Evaluating your answer — this is the slow part. Keep this page open."],
+    ];
+    stageTimers = stages.map(([delay, msg]) =>
+      setTimeout(() => { processingText.textContent = msg; }, delay)
+    );
+  }
+
+  function hideProcessing() {
+    stageTimers.forEach(clearTimeout);
+    stageTimers = [];
+    processingEl.classList.add("hidden");
   }
 
   async function upload() {
@@ -89,6 +115,7 @@
       const data = await res.json();
       window.location = data.redirect; // -> /sessions/<id> (transcript view)
     } catch (err) {
+      hideProcessing();
       statusEl.textContent = `Upload failed: ${err.message}`;
       recordBtn.disabled = false;
     }
