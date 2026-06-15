@@ -54,7 +54,7 @@ The original design above deliberately stopped at *how* the answer is phrased an
 Two rules keep this from backfiring:
 
 1. **It is separate from the lexical analysis.** The `upgraded_version` still preserves the speaker's content — it never silently rewrites their *ideas*. Content issues live only in `content_feedback`. Mixing the two would muddy both: you couldn't tell a vocabulary suggestion from a substance disagreement.
-2. **It flags, it does not grade.** `check` items are framed as things to verify, never verdicts. Judging technical correctness is the single hardest thing for a local 7B, and a *confidently wrong* correction right before an interview is worse than none — so the section prompts the developer's own judgment rather than asserting truth. If correctness depth ever proves insufficient on 7B, the lever is Qwen 14B, then cloud-for-content — not loosening this framing.
+2. **It flags, it does not grade.** `check` items are framed as things to verify, never verdicts. Judging technical correctness is the single hardest thing for a small local model, and a *confidently wrong* correction right before an interview is worse than none — so the section prompts the developer's own judgment rather than asserting truth. If correctness depth ever proves insufficient, the lever is a larger MLX model, then cloud-for-content — not loosening this framing.
 
 This is the one place the app crosses from "language coach" toward "mock interviewer" — and it does so cautiously, on purpose.
 
@@ -63,7 +63,7 @@ This is the one place the app crosses from "language coach" toward "mock intervi
 A few reasons:
 
 - **Score-chasing changes behavior in the wrong direction.** Speakers start optimizing for the score (using fewer simple words to avoid being flagged) instead of for fluency.
-- **Local 7B model judgments are not stable enough to compare across sessions.** A "7 gaps last session, 4 this session" comparison would be noise.
+- **Local model judgments are not stable enough to compare across sessions.** A "7 gaps last session, 4 this session" comparison would be noise.
 - **It's not the bottleneck.** The bottleneck is the developer noticing the gap in context, not measuring himself.
 
 This is a deliberate cut, not a "v2 feature." If it ever appears in the codebase, push back.
@@ -83,7 +83,7 @@ The feedback comes after Stop. The speaker gets the full uninterrupted answer, t
 Two reasons.
 
 - **Interview answers are bursts.** A behavioral STAR answer is 90 seconds. A system design opening overview is 60–90 seconds. A whiteboard-walkthrough subsection is 60–120 seconds. Practicing in this range matches the actual unit of speech being practiced.
-- **Local model latency.** Whisper large-v3 on M4 16GB transcribing 90 seconds of audio is acceptable (probably 5–15 seconds, to be measured). Qwen 7B analyzing a 90-second transcript is acceptable (probably 10–25 seconds, to be measured). 300-second clips would stretch this past the patience threshold.
+- **Local model latency.** Whisper large-v3 on M4 16GB transcribing 90 seconds of audio is acceptable (probably 5–15 seconds, to be measured). Qwen3.5 9B via MLX analyzing a 90-second transcript is acceptable (a short transcript measured ~44s end-to-end; 90s to be measured). 300-second clips would stretch this past the patience threshold.
 
 The UI does not hard-cap at 120s — speakers sometimes need more — but the design point is short bursts.
 

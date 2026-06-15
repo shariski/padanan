@@ -118,7 +118,7 @@ Loading the `large-v3-turbo` model takes a few seconds. Load it once at app star
 
 ### Memory
 
-`large-v3-turbo` at int8 occupies roughly 1–1.5 GB. Combined with Ollama (~5 GB for Qwen 7B Q4) and the OS, this fits in 16 GB unified memory but doesn't leave headroom for, e.g., running Chrome with 30 tabs. The developer should be aware of this when running everything on one machine.
+`large-v3-turbo` at int8 occupies roughly 1–1.5 GB. Combined with the MLX LLM (~7 GB for Qwen3.5 9B 6-bit) and the OS, this fits in 16 GB unified memory but doesn't leave headroom for, e.g., running Chrome with 30 tabs. The developer should be aware of this when running everything on one machine.
 
 ## Sanity check task
 

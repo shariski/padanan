@@ -1,4 +1,4 @@
-"""LLM analysis via Ollama (docs/local-llm-setup.md, docs/feedback-loop.md).
+"""LLM analysis via a local OpenAI-compatible LLM server (docs/local-llm-setup.md, docs/feedback-loop.md).
 
 Takes the interview prompt + transcript and returns a validated Analysis: the
 senior-IC upgrade, lexical gaps, Indonesian-isms, and an overall note.
@@ -8,7 +8,7 @@ app/prompts/analyze_system.txt (the single source of truth, also used by
 scripts/analyze_test.py). It was tightened over three iterations in Phase 2.
 
 On malformed output it retries once with a strict reminder, then raises
-AnalysisError; on an unreachable Ollama it raises AnalysisError immediately. It
+AnalysisError; on an unreachable LLM server it raises AnalysisError immediately. It
 never silently returns degraded output — the schema is the contract.
 """
 
@@ -18,8 +18,8 @@ from pathlib import Path
 import httpx
 from pydantic import BaseModel, ValidationError
 
-OLLAMA_URL = "http://localhost:11434/api/chat"
-OLLAMA_MODEL = "qwen2.5:7b-instruct-q4_K_M"
+LLM_URL = "http://localhost:8080/v1/chat/completions"
+LLM_MODEL = "mlx-community/Qwen3.5-9B-6bit"
 
 SYSTEM_PROMPT = (Path(__file__).parent / "prompts" / "analyze_system.txt").read_text()
 
@@ -72,8 +72,8 @@ async def analyze(transcript: str, prompt_text: str) -> Analysis:
             try:
                 content = await _chat(client, messages)
             except httpx.HTTPError as e:
-                # Ollama down/unreachable — retrying won't help (product-spec §8).
-                raise AnalysisError(f"could not reach Ollama ({e})") from e
+                # LLM server down/unreachable — retrying won't help (product-spec §8).
+                raise AnalysisError(f"could not reach the LLM server ({e})") from e
             try:
                 return Analysis.model_validate_json(content)
             except (ValidationError, json.JSONDecodeError) as e:
@@ -86,12 +86,13 @@ async def analyze(transcript: str, prompt_text: str) -> Analysis:
 
 async def _chat(client: httpx.AsyncClient, messages: list[dict]) -> str:
     payload = {
-        "model": OLLAMA_MODEL,
+        "model": LLM_MODEL,
         "messages": messages,
         "stream": False,
-        "format": "json",
-        "options": {"temperature": 0.3, "num_predict": 2000},
+        "response_format": {"type": "json_object"},
+        "temperature": 0.3,
+        "max_tokens": 2000,
     }
-    r = await client.post(OLLAMA_URL, json=payload)
+    r = await client.post(LLM_URL, json=payload)
     r.raise_for_status()
-    return r.json()["message"]["content"]
+    return r.json()["choices"][0]["message"]["content"]

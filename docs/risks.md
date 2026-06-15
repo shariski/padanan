@@ -12,29 +12,29 @@ Things that could break the MVP, and things we chose not to build. Read this alo
 
 **Fallback:** If `large-v3-turbo` is unacceptable, fall back to `large-v3`. If that's also unacceptable, the project's foundational assumption is wrong and the plan needs to be revised — possibly switching to a different ASR (e.g. cloud Whisper API, even though the developer wanted local).
 
-### Qwen 7B output quality
+### Local model output quality
 
-**Risk:** The lexical-upgrade task demands nuance. A 7B local model might produce flat or generic upgrades, padded gap lists, or boilerplate overall_notes.
+**Risk:** The lexical-upgrade task demands nuance. A small local model might produce flat or generic upgrades, padded gap lists, or boilerplate overall_notes.
 
 **Mitigation:** Phase 2 of `plan.md` is a sanity check on 3 transcripts before building UI.
 
-**Fallback:** Upgrade to Qwen 14B Q4 (one config change). If that's also insufficient, the prompt needs more work, or the model needs to be different (Llama 3.1 8B for comparison), or — last resort — the self-hosting constraint needs to be relaxed.
+**Fallback:** Serve a larger MLX model (one-line config change). If that's also insufficient, the prompt needs more work, or the model needs to be different (Llama 3.1 8B for comparison), or — last resort — the self-hosting constraint needs to be relaxed.
 
-### Ollama JSON-mode reliability
+### JSON-mode reliability
 
-**Risk:** `"format": "json"` forces JSON-shaped output but doesn't guarantee schema correctness. The model might omit fields or invent fields.
+**Risk:** `response_format: {"type": "json_object"}` forces JSON-shaped output but doesn't guarantee schema correctness. The model might omit fields or invent fields.
 
 **Mitigation:** Pydantic validation with one strict re-prompt on failure.
 
-**Fallback:** If the failure rate is high in dogfooding, tighten the system prompt with explicit field-by-field guidance, or switch to a 14B model where instruction-following is stronger.
+**Fallback:** If the failure rate is high in dogfooding, tighten the system prompt with explicit field-by-field guidance, or serve a larger MLX model where instruction-following is stronger.
 
 ### M4 16GB memory pressure
 
-**Risk:** Running Whisper large-v3-turbo (~1.5GB) + Qwen 7B Q4 (~5GB) + macOS + browser leaves limited headroom. Heavy use could push the system into swap, hurting latency.
+**Risk:** Running Whisper large-v3-turbo (~1.5GB) + Qwen3.5 9B 6-bit (~7GB) + macOS + browser leaves limited headroom. Heavy use could push the system into swap, hurting latency.
 
 **Mitigation:** Close memory-heavy apps during use. Monitor with Activity Monitor during Phase 1 and Phase 2.
 
-**Fallback:** If 14B is needed and 16GB is too tight, options are (a) accept slower swap-driven latency, (b) close more apps, (c) accept that Qwen 7B is the ceiling on this hardware.
+**Fallback:** If a larger model is needed and 16GB is too tight, options are (a) accept slower swap-driven latency, (b) close more apps, (c) accept that ~9B is the ceiling on this hardware.
 
 ### Tailscale + browser microphone secure-context interaction
 
@@ -84,7 +84,7 @@ The idea: 24 hours after a gap is surfaced, re-prompt the user with a similar qu
 The idea: after N sessions, surface aggregated patterns ("you pause on distributed-systems terms 70% of the time"). Deferred because:
 
 - Needs N sessions of clean data first
-- The local 7B model's gap-detection isn't stable enough across sessions for aggregation to be statistically meaningful
+- The local model's gap-detection isn't stable enough across sessions for aggregation to be statistically meaningful
 
 ### Pronunciation analysis
 
@@ -104,7 +104,7 @@ The idea: as the user pauses, suggestions appear. Out of scope because:
 
 ### Cloud LLM fallback
 
-The idea: if Ollama is down or quality is poor, fall back to Claude API. Excluded because:
+The idea: if the local LLM is down or quality is poor, fall back to Claude API. Excluded because:
 
 - The developer explicitly chose self-hosting; cloud fallback dilutes that choice
 - A fallback that's "the better option" is the option that will silently become the only one used
@@ -129,7 +129,7 @@ The idea: comprehensive test coverage. Excluded because:
 ## Things that might surprise during the build
 
 - **macOS Gatekeeper / mic permission** quirks on first browser run — the OS-level mic permission prompt is separate from the browser's
-- **Ollama model first-run delay** — the first request after `ollama serve` starts can be slow because the model is being loaded into memory
+- **Model first-run delay** — the first request after `mlx_lm.server` starts can be slow (model load + JSON-grammar warmup), and can even drop the connection once before settling
 - **Safari `MediaRecorder` quirks** — Safari only relatively recently supported `MediaRecorder`; some codec defaults are different from Chrome
 - **Browser audio file extension confusion** — the blob's mime type and the file extension might disagree; ffmpeg handles either, but logging the mime type at upload helps debug
 - **HTMX response expectations** — HTMX expects HTML fragments back from POST routes by default, not JSON; structure the routes accordingly

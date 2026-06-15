@@ -1,14 +1,14 @@
 """Phase 2 LLM analysis sanity check.
 
-Sends an interview prompt + a transcript to Qwen 7B via Ollama using the system
+Sends an interview prompt + a transcript to the local LLM (OpenAI-compatible) using the system
 prompt from docs/local-llm-setup.md, validates the JSON output against the
 Analysis schema, and prints the result. Retries once on schema-validation
 failure, then fails loudly (no silent fallback).
 
 The point (docs/plan.md Phase 2, docs/local-llm-setup.md "Quality sanity check"):
-judge whether the local 7B model produces *useful* feedback — a real upgrade,
+judge whether the local model produces *useful* feedback — a real upgrade,
 real gaps, a pointed overall_note — before any UI is built. This is a decision
-gate: if it isn't useful, swap to Qwen 14B or rework the prompt first.
+gate: if it isn't useful, swap to a larger MLX model or rework the prompt first.
 
 The system prompt, user template, schema, and request options here mirror what
 will go into app/analyze.py, so this script doubles as the prompt's first test.
@@ -28,8 +28,8 @@ from pathlib import Path
 import httpx
 from pydantic import BaseModel, ValidationError
 
-OLLAMA_URL = "http://localhost:11434/api/chat"
-MODEL = "qwen2.5:7b-instruct-q4_K_M"
+LLM_URL = "http://localhost:8080/v1/chat/completions"
+MODEL = "mlx-community/Qwen3.5-9B-6bit"
 
 # The system prompt — the single source of truth — lives in
 # app/prompts/analyze_system.txt (also loaded by app/analyze.py). Loading it here
@@ -73,20 +73,21 @@ def user_prompt(prompt_text: str, transcript: str) -> str:
     )
 
 
-def call_ollama(messages: list[dict]) -> tuple[str, dict]:
-    """One /api/chat round-trip. Returns (content, raw_response_json)."""
+def call_llm(messages: list[dict]) -> tuple[str, dict]:
+    """One /v1/chat/completions round-trip. Returns (content, raw_response_json)."""
     payload = {
         "model": MODEL,
         "messages": messages,
         "stream": False,
-        "format": "json",
-        "options": {"temperature": 0.3, "num_predict": 2000},
+        "response_format": {"type": "json_object"},
+        "temperature": 0.3,
+        "max_tokens": 2000,
     }
     with httpx.Client(timeout=120) as client:
-        r = client.post(OLLAMA_URL, json=payload)
+        r = client.post(LLM_URL, json=payload)
         r.raise_for_status()
         data = r.json()
-    return data["message"]["content"], data
+    return data["choices"][0]["message"]["content"], data
 
 
 def analyze(prompt_text: str, transcript: str) -> tuple[Analysis, int, float]:
@@ -101,7 +102,7 @@ def analyze(prompt_text: str, transcript: str) -> tuple[Analysis, int, float]:
 
     t0 = time.perf_counter()
     for attempt in (1, 2):
-        content, _ = call_ollama(messages)
+        content, _ = call_llm(messages)
         try:
             return Analysis.model_validate_json(content), attempt, time.perf_counter() - t0
         except (ValidationError, json.JSONDecodeError) as e:
@@ -161,7 +162,7 @@ def main() -> None:
     except (ValidationError, json.JSONDecodeError) as e:
         sys.exit(f"\nANALYSIS FAILED — model returned malformed output after retry:\n{e}")
     except httpx.HTTPError as e:
-        sys.exit(f"\nOllama request failed (is the service running?): {e}")
+        sys.exit(f"\nLLM request failed (is the MLX server running?): {e}")
 
     print(f"[ok in {latency:.1f}s, {attempts} attempt(s), schema valid]\n")
     render(analysis)

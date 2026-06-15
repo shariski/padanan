@@ -170,7 +170,7 @@ These are not "v2" features. They are decisions to not build, full stop, in week
 - A mobile-native app
 - Browser extension
 - Anything that touches Claude API, OpenAI API, or any cloud LLM
-- Offline operation when there is no Ollama process running (the app simply shows an error)
+- Offline operation when there is no MLX server running (the app simply shows an error)
 
 ## 9. Acceptance criteria
 
